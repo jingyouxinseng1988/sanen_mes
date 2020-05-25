@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.plc.platform.dao.WeldmentDao">
+    <!-- 查询字段 -->
+    <sql id="fields">
+        select
+            id id,
+            weldment_name weldmentName,
+            plan_count planCount,
+            remark remark,
+            raw_material_name rawMaterialName,
+            drawing_no drawingNo,
+            consume_count consumeCount,
+            specification specification,
+            create_time createTime,
+            modify_time modifyTime,
+            deleted deleted,
+            plan_id planId
+
+    </sql>
+    <!-- （条件） -->
+    <sql id="where">
+        <where>
+                        <if test="ids != null and  ids.size > 0">
+                            and id in
+                            <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                            </foreach>
+                        </if>
+                        <if test="weldmentName != null and weldmentName != ''">
+                            and weldment_name= #{weldmentName,jdbcType=VARCHAR}
+                        </if>
+                        <if test="planCount != null">
+                            and plan_count= #{planCount,jdbcType=INTEGER}
+                        </if>
+                        <if test="remark != null and remark != ''">
+                            and remark= #{remark,jdbcType=VARCHAR}
+                        </if>
+                        <if test="rawMaterialName != null and rawMaterialName != ''">
+                            and raw_material_name= #{rawMaterialName,jdbcType=VARCHAR}
+                        </if>
+                        <if test="drawingNo != null and drawingNo != ''">
+                            and drawing_no= #{drawingNo,jdbcType=VARCHAR}
+                        </if>
+                        <if test="consumeCount != null">
+                            and consume_count= #{consumeCount,jdbcType=INTEGER}
+                        </if>
+                        <if test="specification != null and specification != ''">
+                            and specification= #{specification,jdbcType=VARCHAR}
+                        </if>
+                        <if test="createTime != null">
+                            and create_time= #{createTime,jdbcType=TIMESTAMP}
+                        </if>
+                        <if test="modifyTime != null">
+                            and modify_time= #{modifyTime,jdbcType=TIMESTAMP}
+                        </if>
+                        <if test="deleted != null">
+                            and deleted= #{deleted,jdbcType=INTEGER}
+                        </if>
+                        <if test="planId != null">
+                            and plan_id= #{planId,jdbcType=BIGINT}
+                        </if>
+        </where>
+    </sql>
+    <!-- （插入或更新） -->
+    <sql id="saveSet">
+        <trim prefix="" suffixOverrides=",">
+                        <if test="weldmentName != null and weldmentName != ''">
+                            weldment_name= #{weldmentName,jdbcType=VARCHAR},
+                        </if>
+                        <if test="planCount != null">
+                            plan_count= #{planCount,jdbcType=INTEGER},
+                        </if>
+                        <if test="remark != null and remark != ''">
+                            remark= #{remark,jdbcType=VARCHAR},
+                        </if>
+                        <if test="rawMaterialName != null and rawMaterialName != ''">
+
+
+                            raw_material_name= #{rawMaterialName,jdbcType=VARCHAR},
+
+
+                        </if>
+                        <if test="drawingNo != null and drawingNo != ''">
+                            drawing_no= #{drawingNo,jdbcType=VARCHAR},
+                        </if>
+                        <if test="consumeCount != null">
+                            consume_count= #{consumeCount,jdbcType=INTEGER},
+                        </if>
+                        <if test="specification != null and specification != ''">
+                            specification= #{specification,jdbcType=VARCHAR},
+                        </if>
+                        <if test="createTime != null">
+                            create_time= #{createTime,jdbcType=TIMESTAMP},
+                        </if>
+                        <if test="modifyTime != null">
+                            modify_time= #{modifyTime,jdbcType=TIMESTAMP},
+                        </if>
+                        <if test="deleted != null">
+                            deleted= #{deleted,jdbcType=INTEGER},
+                        </if>
+                        <if test="planId != null">
+                            plan_id= #{planId,jdbcType=BIGINT},
+                        </if>
+        </trim>
+    </sql>
+
+    <!-- 插入实体 -->
+    <insert id="insert" parameterType="com.plc.platform.entity.Weldment" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into weldment set
+        <include refid="saveSet"/>
+    </insert>
+    <!-- 批量插入实体 -->
+    <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into weldment
+        (
+                     weldment_name,
+                     plan_count,
+                     remark,
+                     raw_material_name,
+                     drawing_no,
+                     consume_count,
+                     specification,
+                     create_time,
+                     modify_time,
+                     deleted,
+                     plan_id
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            <trim prefix="" suffixOverrides=",">
+                    #{item.weldmentName,jdbcType=VARCHAR},
+                    #{item.planCount,jdbcType=INTEGER},
+                    #{item.remark,jdbcType=VARCHAR},
+                    #{item.rawMaterialName,jdbcType=VARCHAR},
+                    #{item.drawingNo,jdbcType=VARCHAR},
+                    #{item.consumeCount,jdbcType=INTEGER},
+                    #{item.specification,jdbcType=VARCHAR},
+                    #{item.createTime,jdbcType=TIMESTAMP},
+                    #{item.modifyTime,jdbcType=TIMESTAMP},
+                    #{item.deleted,jdbcType=INTEGER},
+                    #{item.planId,jdbcType=BIGINT},
+            </trim>
+            )
+        </foreach>
+    </insert>
+
+    <!-- 更新实体 -->
+    <update id="update" parameterType="com.plc.platform.entity.Weldment">
+        update weldment set
+        <include refid="saveSet"/>
+        where id = #{id}
+    </update>
+    <update id="deleteById">
+        update weldment
+        <set>
+            deleted=1
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 查询单个 -->
+    <select id="getById" resultType="com.plc.platform.entity.Weldment">
+        <include refid="fields"/>
+        from weldment
+        where id = #{id}
+    </select>
+    <!-- 查询 -->
+    <select id="getList"
+            resultType="com.plc.platform.entity.Weldment">
+        <include refid="fields"/>
+        from weldment
+        <include refid="where"/>
+        <if test="column != null">
+            order by ${column}  ${sort}
+        </if>
+        <if test="offset != null">
+            limit #{offset} , ${limit}
+        </if>
+    </select>
+
+
+    <!-- 查询（计数） -->
+    <select id="getCount" resultType="java.lang.Long">
+        select count(*)
+        from weldment
+        <include refid="where"/>
+    </select>
+</mapper>
