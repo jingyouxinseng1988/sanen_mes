@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
+
 @Data
 public class WeldmentDto {
 
@@ -34,6 +36,13 @@ public class WeldmentDto {
 
     @NotBlank(message = "规格不能为空")
     private String specification;
+
+    private Integer finishedProductCount;
+    private Integer badProductCount;
+    private String startTime;
+    private String endTime;
+
+    private List<SubMaterialInfo> subMaterialInfo;
 
 
 }

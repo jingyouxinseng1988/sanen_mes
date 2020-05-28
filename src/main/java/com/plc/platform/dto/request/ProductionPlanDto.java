@@ -29,15 +29,24 @@ public class ProductionPlanDto {
     @Valid
     private List<WeldmentDto> data;
 
+    private Integer peopleCount;
+
+    private Integer deviceCount;
+
+
+    private List<Order> orderData;
+
+    private List<MachineRunInfo> machineData;
+
 
     public static void main(String[] args) {
-        ProductionPlanDto productionPlanDto=new ProductionPlanDto();
+        ProductionPlanDto productionPlanDto = new ProductionPlanDto();
         productionPlanDto.setLeader("张三");
         productionPlanDto.setShift(1);
         productionPlanDto.setProductTime(System.currentTimeMillis());
         productionPlanDto.setData(new ArrayList<>());
 
-        WeldmentDto weldmentDto=new WeldmentDto();
+        WeldmentDto weldmentDto = new WeldmentDto();
         weldmentDto.setConsumeCount(1);
         weldmentDto.setDrawingNo("drwingNO");
         weldmentDto.setRemark("rewe");

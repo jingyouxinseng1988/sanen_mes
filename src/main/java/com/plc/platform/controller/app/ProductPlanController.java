@@ -1,15 +1,17 @@
 package com.plc.platform.controller.app;//package com.plc.platform.controller.app;
 
+import com.alibaba.fastjson.JSON;
 import com.plc.platform.common.Constants;
 import com.plc.platform.controller.BaseController;
 import com.plc.platform.domain.AjaxResult;
-import com.plc.platform.dto.request.ProductionPlanDto;
-import com.plc.platform.dto.request.WeldmentDto;
+import com.plc.platform.dto.request.*;
 import com.plc.platform.entity.ProductionPlan;
 import com.plc.platform.entity.Weldment;
 import com.plc.platform.queryBo.ProductionPlanQueryBo;
+import com.plc.platform.queryBo.WeldmentQueryBo;
 import com.plc.platform.service.ProductionPlanService;
 import com.plc.platform.service.WeldmentService;
+import com.plc.platform.util.SpringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,11 +45,46 @@ public class ProductPlanController extends BaseController {
 
         BeanUtils.copyProperties(planDto, productionPlan);
         productionPlan.setProductTime(new Date(planDto.getProductTime()));
+        productionPlan.setMachineData(JSON.toJSONString(planDto.getMachineData()));
+        productionPlan.setOrderData(JSON.toJSONString(planDto.getOrderData()));
         productionPlanService.add(productionPlan);
         List<WeldmentDto> data = planDto.getData();
         for (WeldmentDto dto : data) {
+            dto.setId(null);
             Weldment weldment = new Weldment();
             BeanUtils.copyProperties(dto, weldment);
+            weldment.setSubMaterialInfo(JSON.toJSONString(dto.getSubMaterialInfo()));
+            weldment.setPlanId(productionPlan.getId());
+            weldmentService.add(weldment);
+        }
+        return AjaxResult.success("");
+    }
+
+
+    @RequestMapping(value = "/update")
+    @Transactional
+    public AjaxResult update(@RequestBody ProductionPlanDto planDto) {
+
+        ProductionPlan productionPlan = productionPlanService.getById(planDto.getId());
+        SpringUtil.copyNotNullProperties(planDto, productionPlan);
+        productionPlan.setProductTime(new Date(planDto.getProductTime()));
+        productionPlan.setMachineData(JSON.toJSONString(planDto.getMachineData()));
+        productionPlan.setOrderData(JSON.toJSONString(planDto.getOrderData()));
+        productionPlanService.add(productionPlan);
+
+
+        WeldmentQueryBo weldmentQueryBo = new WeldmentQueryBo();
+        weldmentQueryBo.setPlanId(productionPlan.getId());
+        weldmentQueryBo.setDeleted(Constants.DELETED_NO);
+        Map<Long, Weldment> idMap = weldmentService.getList(weldmentQueryBo).stream().collect(
+                Collectors.toMap((Weldment::getId)+"", X -> X));
+
+        List<WeldmentDto> data = planDto.getData();
+        for (WeldmentDto dto : data) {
+            idMap.g
+            Weldment weldment = new Weldment();
+            SpringUtil.copyNotNullProperties(dto, weldment);
+            weldment.setSubMaterialInfo(JSON.toJSONString(dto.getSubMaterialInfo()));
             weldment.setPlanId(productionPlan.getId());
             weldmentService.add(weldment);
         }
@@ -76,10 +113,10 @@ public class ProductPlanController extends BaseController {
         for (ProductionPlan plan : list) {
             ProductionPlanDto productionPlanDto = new ProductionPlanDto();
             data.add(productionPlanDto);
-            productionPlanDto.setProductTime(plan.getProductTime().getTime());
-
-
             BeanUtils.copyProperties(plan, productionPlanDto);
+            productionPlanDto.setProductTime(plan.getProductTime().getTime());
+            productionPlanDto.setMachineData(JSON.parseArray(plan.getMachineData(), MachineRunInfo.class));
+            productionPlanDto.setOrderData(JSON.parseArray(plan.getMachineData(), Order.class));
             productionPlanDto.setData(new ArrayList<>());
             List<Weldment> weldments = planMapWeldmentList.get(plan.getId());
             if (weldments == null) {
@@ -88,6 +125,7 @@ public class ProductPlanController extends BaseController {
             for (Weldment weldment : weldments) {
                 WeldmentDto weldmentDto = new WeldmentDto();
                 BeanUtils.copyProperties(weldment, weldmentDto);
+                weldmentDto.setSubMaterialInfo(JSON.parseArray(plan.getMachineData(), SubMaterialInfo.class));
                 productionPlanDto.getData().add(weldmentDto);
             }
         }

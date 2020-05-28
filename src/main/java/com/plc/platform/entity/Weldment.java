@@ -49,4 +49,12 @@ public class Weldment {
     private Long planId;
 
 
+    private Integer finishedProductCount;
+    private Integer badProductCount;
+    private String startTime;
+    private String endTime;
+
+    private String subMaterialInfo;
+
+
 }

@@ -3,6 +3,8 @@ package com.plc.platform.entity;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 实体对象：
  */
@@ -15,8 +17,8 @@ public class ProductionPlan {
     private Long id;
 
     // 创建时间
-    private java.util.Date createTime;
-    private java.util.Date modifyTime;
+    private Date createTime;
+    private Date modifyTime;
 
     // 删除
     private Integer deleted;
@@ -31,7 +33,20 @@ public class ProductionPlan {
 
 
     // 生产日期
-    private java.util.Date productTime;
+    private Date productTime;
+
+
+    private Integer peopleCount;
+
+    private Integer deviceCount;
+
+    private String customerName;
+
+    private String productName;
+
+    private String machineData;
+
+    private String orderData;
 
 
 }
