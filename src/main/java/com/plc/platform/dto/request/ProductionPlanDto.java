@@ -40,12 +40,28 @@ public class ProductionPlanDto {
 
 
     public static void main(String[] args) {
+
+        Order order = new Order();
+        order.setCustomerName("testCustomerName");
+        order.setProductName("productKeyNae");
+        List<Order> orders = new ArrayList<>();
+        orders.add(order);
+
+        List<MachineRunInfo> data = new ArrayList<>();
+        MachineRunInfo machineRunInfo = new MachineRunInfo();
+        machineRunInfo.setName("test");
+        machineRunInfo.setDeviceCount(1);
+        machineRunInfo.setRunTime(1);
+        data.add(machineRunInfo);
+
+
         ProductionPlanDto productionPlanDto = new ProductionPlanDto();
         productionPlanDto.setLeader("张三");
         productionPlanDto.setShift(1);
         productionPlanDto.setProductTime(System.currentTimeMillis());
         productionPlanDto.setData(new ArrayList<>());
-
+        productionPlanDto.setMachineData(data);
+        productionPlanDto.setOrderData(orders);
         WeldmentDto weldmentDto = new WeldmentDto();
         weldmentDto.setConsumeCount(1);
         weldmentDto.setDrawingNo("drwingNO");
@@ -54,6 +70,17 @@ public class ProductionPlanDto {
         weldmentDto.setSpecification("specification");
         weldmentDto.setRawMaterialName("rawMatttt");
         weldmentDto.setWeldmentName("weldmentName");
+
+        List<SubMaterialInfo> suInfoList = new ArrayList<>();
+        SubMaterialInfo subMaterialInfo = new SubMaterialInfo();
+        subMaterialInfo.setMaterialCode("123456");
+        subMaterialInfo.setMaterialCount(120);
+        subMaterialInfo.setMaterialName("测试物料名称");
+        suInfoList.add(subMaterialInfo);
+
+        weldmentDto.setSubMaterialInfo(suInfoList);
+        weldmentDto.setEndTime("20200529");
+        weldmentDto.setStartTime("20202586");
         productionPlanDto.getData().add(weldmentDto);
         System.out.println(JSON.toJSONString(productionPlanDto));
     }

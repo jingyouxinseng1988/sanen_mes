@@ -66,27 +66,37 @@ public class ProductPlanController extends BaseController {
     public AjaxResult update(@RequestBody ProductionPlanDto planDto) {
 
         ProductionPlan productionPlan = productionPlanService.getById(planDto.getId());
+        if(productionPlan==null){
+            return AjaxResult.warn("没有找到该数据");
+        }
         SpringUtil.copyNotNullProperties(planDto, productionPlan);
         productionPlan.setProductTime(new Date(planDto.getProductTime()));
         productionPlan.setMachineData(JSON.toJSONString(planDto.getMachineData()));
         productionPlan.setOrderData(JSON.toJSONString(planDto.getOrderData()));
-        productionPlanService.add(productionPlan);
+        productionPlanService.update(productionPlan);
 
 
         WeldmentQueryBo weldmentQueryBo = new WeldmentQueryBo();
         weldmentQueryBo.setPlanId(productionPlan.getId());
         weldmentQueryBo.setDeleted(Constants.DELETED_NO);
-        Map<Long, Weldment> idMap = weldmentService.getList(weldmentQueryBo).stream().collect(
-                Collectors.toMap((Weldment::getId)+"", X -> X));
+        Map<Long, Weldment> idMap = weldmentService.getList(weldmentQueryBo).stream()
+                .collect(Collectors.toMap(Weldment::getId, X -> X));
 
         List<WeldmentDto> data = planDto.getData();
         for (WeldmentDto dto : data) {
-            idMap.g
-            Weldment weldment = new Weldment();
-            SpringUtil.copyNotNullProperties(dto, weldment);
-            weldment.setSubMaterialInfo(JSON.toJSONString(dto.getSubMaterialInfo()));
-            weldment.setPlanId(productionPlan.getId());
-            weldmentService.add(weldment);
+            Weldment weldment = idMap.get(dto.getId());
+            if (weldment == null) {
+                weldment = new Weldment();
+                SpringUtil.copyNotNullProperties(dto, weldment);
+                weldment.setSubMaterialInfo(JSON.toJSONString(dto.getSubMaterialInfo()));
+                weldment.setPlanId(productionPlan.getId());
+                weldmentService.add(weldment);
+            }else {
+                SpringUtil.copyNotNullProperties(dto, weldment);
+                weldment.setSubMaterialInfo(JSON.toJSONString(dto.getSubMaterialInfo()));
+                weldment.setPlanId(productionPlan.getId());
+                weldmentService.update(weldment);
+            }
         }
         return AjaxResult.success("");
     }
@@ -116,7 +126,7 @@ public class ProductPlanController extends BaseController {
             BeanUtils.copyProperties(plan, productionPlanDto);
             productionPlanDto.setProductTime(plan.getProductTime().getTime());
             productionPlanDto.setMachineData(JSON.parseArray(plan.getMachineData(), MachineRunInfo.class));
-            productionPlanDto.setOrderData(JSON.parseArray(plan.getMachineData(), Order.class));
+            productionPlanDto.setOrderData(JSON.parseArray(plan.getOrderData(), Order.class));
             productionPlanDto.setData(new ArrayList<>());
             List<Weldment> weldments = planMapWeldmentList.get(plan.getId());
             if (weldments == null) {
@@ -125,7 +135,7 @@ public class ProductPlanController extends BaseController {
             for (Weldment weldment : weldments) {
                 WeldmentDto weldmentDto = new WeldmentDto();
                 BeanUtils.copyProperties(weldment, weldmentDto);
-                weldmentDto.setSubMaterialInfo(JSON.parseArray(plan.getMachineData(), SubMaterialInfo.class));
+                weldmentDto.setSubMaterialInfo(JSON.parseArray(weldment.getSubMaterialInfo(), SubMaterialInfo.class));
                 productionPlanDto.getData().add(weldmentDto);
             }
         }

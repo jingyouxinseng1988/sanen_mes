@@ -6,6 +6,6 @@ import lombok.Data;
 public class MachineRunInfo {
 
     private String name;
-    private String runTime;
-    private String deviceCount;
+    private Integer runTime;
+    private Integer deviceCount;
 }

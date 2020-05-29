@@ -15,7 +15,12 @@
             create_time createTime,
             modify_time modifyTime,
             deleted deleted,
-            plan_id planId
+            plan_id planId,
+            finished_Product_count finishedProductCount,
+            bad_product_count badProductCount,
+            sub_material_info subMaterialInfo,
+            end_time endTime,
+            start_time startTime
 
     </sql>
     <!-- （条件） -->
@@ -60,6 +65,21 @@
                         <if test="planId != null">
                             and plan_id= #{planId,jdbcType=BIGINT}
                         </if>
+                        <if test="finishedProductCount != null">
+                            and finished_Product_count= #{finishedProductCount,jdbcType=INTEGER}
+                        </if>
+                        <if test="badProductCount != null">
+                            and bad_product_count= #{badProductCount,jdbcType=INTEGER}
+                        </if>
+                        <if test="subMaterialInfo != null and subMaterialInfo != ''">
+                            and sub_material_info= #{subMaterialInfo,jdbcType=VARCHAR}
+                        </if>
+                        <if test="endTime != null and endTime != ''">
+                            and end_time= #{endTime,jdbcType=VARCHAR}
+                        </if>
+                        <if test="startTime != null and startTime != ''">
+                            and start_time= #{startTime,jdbcType=VARCHAR}
+                        </if>
         </where>
     </sql>
     <!-- （插入或更新） -->
@@ -75,11 +95,7 @@
                             remark= #{remark,jdbcType=VARCHAR},
                         </if>
                         <if test="rawMaterialName != null and rawMaterialName != ''">
-
-
                             raw_material_name= #{rawMaterialName,jdbcType=VARCHAR},
-
-
                         </if>
                         <if test="drawingNo != null and drawingNo != ''">
                             drawing_no= #{drawingNo,jdbcType=VARCHAR},
@@ -102,6 +118,21 @@
                         <if test="planId != null">
                             plan_id= #{planId,jdbcType=BIGINT},
                         </if>
+                        <if test="finishedProductCount != null">
+                            finished_Product_count= #{finishedProductCount,jdbcType=INTEGER},
+                        </if>
+                        <if test="badProductCount != null">
+                            bad_product_count= #{badProductCount,jdbcType=INTEGER},
+                        </if>
+                        <if test="subMaterialInfo != null and subMaterialInfo != ''">
+                            sub_material_info= #{subMaterialInfo,jdbcType=VARCHAR},
+                        </if>
+                        <if test="endTime != null and endTime != ''">
+                            end_time= #{endTime,jdbcType=VARCHAR},
+                        </if>
+                        <if test="startTime != null and startTime != ''">
+                            start_time= #{startTime,jdbcType=VARCHAR},
+                        </if>
         </trim>
     </sql>
 
@@ -116,6 +147,7 @@
             keyProperty="id">
         insert into weldment
         (
+                     id,
                      weldment_name,
                      plan_count,
                      remark,
@@ -126,12 +158,18 @@
                      create_time,
                      modify_time,
                      deleted,
-                     plan_id
+                     plan_id,
+                     finished_Product_count,
+                     bad_product_count,
+                     sub_material_info,
+                     end_time,
+                     start_time
         )
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" suffixOverrides=",">
+                    #{item.id,jdbcType=BIGINT},
                     #{item.weldmentName,jdbcType=VARCHAR},
                     #{item.planCount,jdbcType=INTEGER},
                     #{item.remark,jdbcType=VARCHAR},
@@ -143,6 +181,11 @@
                     #{item.modifyTime,jdbcType=TIMESTAMP},
                     #{item.deleted,jdbcType=INTEGER},
                     #{item.planId,jdbcType=BIGINT},
+                    #{item.finishedProductCount,jdbcType=INTEGER},
+                    #{item.badProductCount,jdbcType=INTEGER},
+                    #{item.subMaterialInfo,jdbcType=VARCHAR},
+                    #{item.endTime,jdbcType=VARCHAR},
+                    #{item.startTime,jdbcType=VARCHAR},
             </trim>
             )
         </foreach>

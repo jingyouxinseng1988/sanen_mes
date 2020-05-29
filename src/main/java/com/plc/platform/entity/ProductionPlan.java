@@ -40,9 +40,6 @@ public class ProductionPlan {
 
     private Integer deviceCount;
 
-    private String customerName;
-
-    private String productName;
 
     private String machineData;
 

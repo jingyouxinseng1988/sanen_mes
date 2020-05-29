@@ -10,7 +10,11 @@
             shift shift,
             modify_time modifyTime,
             deleted deleted,
-            product_time productTime
+            product_time productTime,
+            order_data orderData,
+            machine_data machineData,
+            people_count peopleCount,
+            device_count deviceCount
 
     </sql>
     <!-- （条件） -->
@@ -40,6 +44,18 @@
                         <if test="productTime != null">
                             and product_time= #{productTime,jdbcType=TIMESTAMP}
                         </if>
+                        <if test="orderData != null and orderData != ''">
+                            and order_data= #{orderData,jdbcType=VARCHAR}
+                        </if>
+                        <if test="machineData != null and machineData != ''">
+                            and machine_data= #{machineData,jdbcType=VARCHAR}
+                        </if>
+                        <if test="peopleCount != null">
+                            and people_count= #{peopleCount,jdbcType=INTEGER}
+                        </if>
+                        <if test="deviceCount != null">
+                            and device_count= #{deviceCount,jdbcType=INTEGER}
+                        </if>
         </where>
     </sql>
     <!-- （插入或更新） -->
@@ -63,6 +79,18 @@
                         <if test="productTime != null">
                             product_time= #{productTime,jdbcType=TIMESTAMP},
                         </if>
+                        <if test="orderData != null and orderData != ''">
+                            order_data= #{orderData,jdbcType=VARCHAR},
+                        </if>
+                        <if test="machineData != null and machineData != ''">
+                            machine_data= #{machineData,jdbcType=VARCHAR},
+                        </if>
+                        <if test="peopleCount != null">
+                            people_count= #{peopleCount,jdbcType=INTEGER},
+                        </if>
+                        <if test="deviceCount != null">
+                            device_count= #{deviceCount,jdbcType=INTEGER},
+                        </if>
         </trim>
     </sql>
 
@@ -77,23 +105,33 @@
             keyProperty="id">
         insert into production_plan
         (
+                     id,
                      create_time,
                      leader,
                      shift,
                      modify_time,
                      deleted,
-                     product_time
+                     product_time,
+                     order_data,
+                     machine_data,
+                     people_count,
+                     device_count
         )
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" suffixOverrides=",">
+                    #{item.id,jdbcType=BIGINT},
                     #{item.createTime,jdbcType=TIMESTAMP},
                     #{item.leader,jdbcType=VARCHAR},
                     #{item.shift,jdbcType=INTEGER},
                     #{item.modifyTime,jdbcType=TIMESTAMP},
                     #{item.deleted,jdbcType=INTEGER},
                     #{item.productTime,jdbcType=TIMESTAMP},
+                    #{item.orderData,jdbcType=VARCHAR},
+                    #{item.machineData,jdbcType=VARCHAR},
+                    #{item.peopleCount,jdbcType=INTEGER},
+                    #{item.deviceCount,jdbcType=INTEGER},
             </trim>
             )
         </foreach>
