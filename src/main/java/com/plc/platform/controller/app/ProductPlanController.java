@@ -11,6 +11,7 @@ import com.plc.platform.queryBo.OrderQueryBo;
 import com.plc.platform.queryBo.ProductionPlanQueryBo;
 import com.plc.platform.service.OrderService;
 import com.plc.platform.service.ProductionPlanService;
+import com.plc.platform.util.DateUtils;
 import com.plc.platform.util.SpringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +41,7 @@ public class ProductPlanController extends BaseController {
     public AjaxResult add(@RequestBody @Valid AddProductionPlanDto planDto) {
         planDto.setId(null);
         ProductionPlanQueryBo productionPlanQueryBo = new ProductionPlanQueryBo();
-        productionPlanQueryBo.setProductTime(new Date(planDto.getProductTime() / 1000 / (60 * 60 * 24)));
+        productionPlanQueryBo.setProductTime(DateUtils.getDayStartTime(new Date(planDto.getProductTime())));
         productionPlanQueryBo.setShift(planDto.getShift());
         productionPlanQueryBo.setDeleted(Constants.DELETED_NO);
         List<ProductionPlan> list = productionPlanService.getList(productionPlanQueryBo);
@@ -58,6 +59,8 @@ public class ProductPlanController extends BaseController {
         }
         Order order = new Order();
         order.setPlanId(productionPlan.getId());
+        order.setProductName(planDto.getProductName());
+        order.setCustomerName(planDto.getCustomerName());
         order.setMachineInfo(JSON.toJSONString(planDto.getMachineInfoList()));
         order.setMaterialInfo(JSON.toJSONString(planDto.getMaterialInfoList()));
         order.setTips(planDto.getTips());
