@@ -7,10 +7,10 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-public class WeldmentDto {
+public class MaterialInfoDto {
 
 
-    private Long id;
+//    private Long id;
     //
     @NotNull(message = "焊件名称能为空")
     private String weldmentName;
@@ -42,7 +42,7 @@ public class WeldmentDto {
     private String startTime;
     private String endTime;
 
-    private List<SubMaterialInfo> subMaterialInfo;
+//    private List<SubMaterialInfo> subMaterialInfo;
 
 
 }

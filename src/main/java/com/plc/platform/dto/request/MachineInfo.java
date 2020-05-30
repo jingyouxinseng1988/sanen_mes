@@ -3,7 +3,7 @@ package com.plc.platform.dto.request;
 import lombok.Data;
 
 @Data
-public class MachineRunInfo {
+public class MachineInfo {
 
     private String name;
     private Integer runTime;
