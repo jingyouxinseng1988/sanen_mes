@@ -18,4 +18,6 @@ public class OrderDto {
 
     //
     private Long planId;
+
+    private String tips;
 }

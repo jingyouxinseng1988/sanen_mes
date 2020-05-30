@@ -8,6 +8,7 @@
             product_name productName,
             customer_name customerName,
             plan_id planId,
+            tips,
             deleted deleted,
             create_time createTime,
             modify_time modifyTime,
@@ -18,65 +19,71 @@
     <!-- （条件） -->
     <sql id="where">
         <where>
-                        <if test="ids != null and  ids.size > 0">
-                            and id in
-                            <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
-                            #{item}
-                            </foreach>
-                        </if>
-                        <if test="productName != null and productName != ''">
-                            and product_name= #{productName,jdbcType=VARCHAR}
-                        </if>
-                        <if test="customerName != null and customerName != ''">
-                            and customer_name= #{customerName,jdbcType=VARCHAR}
-                        </if>
-                        <if test="planId != null">
-                            and plan_id= #{planId,jdbcType=BIGINT}
-                        </if>
-                        <if test="deleted != null">
-                            and deleted= #{deleted,jdbcType=INTEGER}
-                        </if>
-                        <if test="createTime != null">
-                            and create_time= #{createTime,jdbcType=TIMESTAMP}
-                        </if>
-                        <if test="modifyTime != null">
-                            and modify_time= #{modifyTime,jdbcType=TIMESTAMP}
-                        </if>
-                        <if test="materialInfo != null and materialInfo != ''">
-                            and material_info= #{materialInfo,jdbcType=VARCHAR}
-                        </if>
-                        <if test="machineInfo != null and machineInfo != ''">
-                            and machine_info= #{machineInfo,jdbcType=VARCHAR}
-                        </if>
+            <if test="ids != null and  ids.size > 0">
+                and id in
+                <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="productName != null and productName != ''">
+                and product_name= #{productName,jdbcType=VARCHAR}
+            </if>
+            <if test="tips != null and tips != ''">
+                and tips= #{tips,jdbcType=VARCHAR}
+            </if>
+            <if test="customerName != null and customerName != ''">
+                and customer_name= #{customerName,jdbcType=VARCHAR}
+            </if>
+            <if test="planId != null">
+                and plan_id= #{planId,jdbcType=BIGINT}
+            </if>
+            <if test="deleted != null">
+                and deleted= #{deleted,jdbcType=INTEGER}
+            </if>
+            <if test="createTime != null">
+                and create_time= #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="modifyTime != null">
+                and modify_time= #{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="materialInfo != null and materialInfo != ''">
+                and material_info= #{materialInfo,jdbcType=VARCHAR}
+            </if>
+            <if test="machineInfo != null and machineInfo != ''">
+                and machine_info= #{machineInfo,jdbcType=VARCHAR}
+            </if>
         </where>
     </sql>
     <!-- （插入或更新） -->
     <sql id="saveSet">
         <trim prefix="" suffixOverrides=",">
-                        <if test="productName != null and productName != ''">
-                            product_name= #{productName,jdbcType=VARCHAR},
-                        </if>
-                        <if test="customerName != null and customerName != ''">
-                            customer_name= #{customerName,jdbcType=VARCHAR},
-                        </if>
-                        <if test="planId != null">
-                            plan_id= #{planId,jdbcType=BIGINT},
-                        </if>
-                        <if test="deleted != null">
-                            deleted= #{deleted,jdbcType=INTEGER},
-                        </if>
-                        <if test="createTime != null">
-                            create_time= #{createTime,jdbcType=TIMESTAMP},
-                        </if>
-                        <if test="modifyTime != null">
-                            modify_time= #{modifyTime,jdbcType=TIMESTAMP},
-                        </if>
-                        <if test="materialInfo != null and materialInfo != ''">
-                            material_info= #{materialInfo,jdbcType=VARCHAR},
-                        </if>
-                        <if test="machineInfo != null and machineInfo != ''">
-                            machine_info= #{machineInfo,jdbcType=VARCHAR},
-                        </if>
+            <if test="productName != null and productName != ''">
+                product_name= #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="customerName != null and customerName != ''">
+                customer_name= #{customerName,jdbcType=VARCHAR},
+            </if>
+            <if test="tips != null and tips != ''">
+                tips= #{tips,jdbcType=VARCHAR},
+            </if>
+            <if test="planId != null">
+                plan_id= #{planId,jdbcType=BIGINT},
+            </if>
+            <if test="deleted != null">
+                deleted= #{deleted,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time= #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="modifyTime != null">
+                modify_time= #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="materialInfo != null and materialInfo != ''">
+                material_info= #{materialInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="machineInfo != null and machineInfo != ''">
+                machine_info= #{machineInfo,jdbcType=VARCHAR},
+            </if>
         </trim>
     </sql>
 
@@ -91,27 +98,29 @@
             keyProperty="id">
         insert into `order`
         (
-                     product_name,
-                     customer_name,
-                     plan_id,
-                     deleted,
-                     create_time,
-                     modify_time,
-                     material_info,
-                     machine_info
+        tips,
+        product_name,
+        customer_name,
+        plan_id,
+        deleted,
+        create_time,
+        modify_time,
+        material_info,
+        machine_info
         )
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" suffixOverrides=",">
-                    #{item.productName,jdbcType=VARCHAR},
-                    #{item.customerName,jdbcType=VARCHAR},
-                    #{item.planId,jdbcType=BIGINT},
-                    #{item.deleted,jdbcType=INTEGER},
-                    #{item.createTime,jdbcType=TIMESTAMP},
-                    #{item.modifyTime,jdbcType=TIMESTAMP},
-                    #{item.materialInfo,jdbcType=VARCHAR},
-                    #{item.machineInfo,jdbcType=VARCHAR},
+                #{item.tips,jdbcType=VARCHAR},
+                #{item.productName,jdbcType=VARCHAR},
+                #{item.customerName,jdbcType=VARCHAR},
+                #{item.planId,jdbcType=BIGINT},
+                #{item.deleted,jdbcType=INTEGER},
+                #{item.createTime,jdbcType=TIMESTAMP},
+                #{item.modifyTime,jdbcType=TIMESTAMP},
+                #{item.materialInfo,jdbcType=VARCHAR},
+                #{item.machineInfo,jdbcType=VARCHAR},
             </trim>
             )
         </foreach>
@@ -144,7 +153,7 @@
         from `order`
         <include refid="where"/>
         <if test="column != null">
-            order by ${column}  ${sort}
+            order by ${column} ${sort}
         </if>
         <if test="offset != null">
             limit #{offset} , ${limit}

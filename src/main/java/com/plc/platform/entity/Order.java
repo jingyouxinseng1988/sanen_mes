@@ -38,5 +38,7 @@ public class Order {
         // 机器信息 
             private String machineInfo;
 
+            private String  tips;
+
 
 }

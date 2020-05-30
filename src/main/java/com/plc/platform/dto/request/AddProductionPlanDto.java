@@ -3,7 +3,6 @@ package com.plc.platform.dto.request;
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -31,8 +30,18 @@ public class AddProductionPlanDto {
 
     private Integer deviceCount;
 
-    @Valid
-    private List<OrderDto> orderList;
+
+    @NotNull(message = "产品名称不能为空")
+    private String productName;
+
+    @NotNull(message = "客户名称不能为空")
+    private String customerName;
+
+    private String tips;
+
+    private List<MachineInfo> machineInfoList;
+
+    private List<MaterialInfoDto> materialInfoList;
 
 
     public static void main(String[] args) {
@@ -51,7 +60,6 @@ public class AddProductionPlanDto {
         productionPlanDto.setProductTime(System.currentTimeMillis());
         productionPlanDto.setPeopleCount(11);
         productionPlanDto.setDeviceCount(34);
-        productionPlanDto.setOrderList(list);
 
 
         System.out.println(JSON.toJSONString(productionPlanDto));

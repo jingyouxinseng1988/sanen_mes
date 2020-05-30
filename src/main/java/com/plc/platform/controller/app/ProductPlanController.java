@@ -39,18 +39,29 @@ public class ProductPlanController extends BaseController {
     @Transactional
     public AjaxResult add(@RequestBody @Valid AddProductionPlanDto planDto) {
         planDto.setId(null);
+        ProductionPlanQueryBo productionPlanQueryBo = new ProductionPlanQueryBo();
+        productionPlanQueryBo.setProductTime(new Date(planDto.getProductTime() / 1000 / (60 * 60 * 24)));
+        productionPlanQueryBo.setShift(planDto.getShift());
+        productionPlanQueryBo.setDeleted(Constants.DELETED_NO);
+        List<ProductionPlan> list = productionPlanService.getList(productionPlanQueryBo);
         ProductionPlan productionPlan = new ProductionPlan();
-        BeanUtils.copyProperties(planDto, productionPlan);
-        productionPlan.setProductTime(new Date(planDto.getProductTime()));
-        productionPlanService.add(productionPlan);
-
-        List<OrderDto> orderList = planDto.getOrderList();
-        for (OrderDto orderDto : orderList) {
-            Order order = new Order();
-            SpringUtil.copyNotNullProperties(orderDto, order);
-            order.setPlanId(productionPlan.getId());
-            orderService.add(order);
+        if (!list.isEmpty()) {
+            productionPlan = list.get(0);
         }
+        SpringUtil.copyNotNullProperties(planDto, productionPlan);
+        productionPlan.setProductTime(new Date(planDto.getProductTime()));
+        if (planDto.getId() == null) {
+            productionPlanService.add(productionPlan);
+        } else {
+            productionPlan.setModifyTime(new Date());
+            productionPlanService.update(productionPlan);
+        }
+        Order order = new Order();
+        order.setPlanId(productionPlan.getId());
+        order.setMachineInfo(JSON.toJSONString(planDto.getMachineInfoList()));
+        order.setMaterialInfo(JSON.toJSONString(planDto.getMaterialInfoList()));
+        order.setTips(planDto.getTips());
+        orderService.add(order);
         return AjaxResult.success("");
     }
 
