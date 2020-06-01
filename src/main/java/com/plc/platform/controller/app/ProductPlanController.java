@@ -11,7 +11,6 @@ import com.plc.platform.queryBo.OrderQueryBo;
 import com.plc.platform.queryBo.ProductionPlanQueryBo;
 import com.plc.platform.service.OrderService;
 import com.plc.platform.service.ProductionPlanService;
-import com.plc.platform.util.DateUtils;
 import com.plc.platform.util.SpringUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/production_plan")
@@ -41,7 +42,7 @@ public class ProductPlanController extends BaseController {
     public AjaxResult add(@RequestBody @Valid AddProductionPlanDto planDto) {
         planDto.setId(null);
         ProductionPlanQueryBo productionPlanQueryBo = new ProductionPlanQueryBo();
-        productionPlanQueryBo.setProductTime(DateUtils.getDayStartTime(new Date(planDto.getProductTime())));
+        productionPlanQueryBo.setProductTime(new Date(planDto.getProductTime()));
         productionPlanQueryBo.setShift(planDto.getShift());
         productionPlanQueryBo.setDeleted(Constants.DELETED_NO);
         List<ProductionPlan> list = productionPlanService.getList(productionPlanQueryBo);
@@ -51,7 +52,7 @@ public class ProductPlanController extends BaseController {
         }
         SpringUtil.copyNotNullProperties(planDto, productionPlan);
         productionPlan.setProductTime(new Date(planDto.getProductTime()));
-        if (planDto.getId() == null) {
+        if (productionPlan.getId() == null) {
             productionPlanService.add(productionPlan);
         } else {
             productionPlan.setModifyTime(new Date());
@@ -64,6 +65,14 @@ public class ProductPlanController extends BaseController {
         order.setMachineInfo(JSON.toJSONString(planDto.getMachineInfoList()));
         order.setMaterialInfo(JSON.toJSONString(planDto.getMaterialInfoList()));
         order.setTips(planDto.getTips());
+        if(planDto.getOrderEndTime()!=null){
+            order.setOrderStartTime(new Date(planDto.getOrderStartTime()));
+        }
+        if(planDto.getOrderStartTime()!=null){
+            order.setOrderEndTime(new Date(planDto.getOrderEndTime()));
+        }
+        order.setOrderTodayPlanCount(planDto.getOrderTodayPlanCount());
+        order.setOrderSumCount(planDto.getOrderSumCount());
         orderService.add(order);
         return AjaxResult.success("");
     }
@@ -118,6 +127,8 @@ public class ProductPlanController extends BaseController {
         for (Order order : list) {
             OrderDto orderDto = new OrderDto();
             SpringUtil.copyNotNullProperties(order, orderDto);
+            orderDto.setOrderEndTime(order.getOrderStartTime().getTime());
+            orderDto.setOrderStartTime(order.getOrderEndTime().getTime());
             data.add(orderDto);
         }
         return AjaxResult.success(data);
@@ -125,19 +136,31 @@ public class ProductPlanController extends BaseController {
 
     @RequestMapping(value = "/material_machine/list")
     public AjaxResult getMaterialInfo(@RequestBody @Valid OrderId orderId) {
-        Map<String, Object> data = new HashMap<>();
+        OrderMachineMaterialInfo orderMachineMaterialInfo=new OrderMachineMaterialInfo();
         Order order = orderService.getById(orderId.getOrderId());
         if (order == null) {
-            return AjaxResult.success(data);
+            return AjaxResult.success(orderMachineMaterialInfo);
         }
 
         List<MachineInfo> machineInfoList = JSON.parseArray(order.getMachineInfo(), MachineInfo.class);
         List<MaterialInfoDto> materialInfoDtoList = JSON.parseArray(order.getMaterialInfo(), MaterialInfoDto.class);
 
+        orderMachineMaterialInfo.setMachineInfoList(machineInfoList);
+        orderMachineMaterialInfo.setMaterialInfoList(materialInfoDtoList);
 
-        data.put("machineInfo", machineInfoList);
-        data.put("materialInfo", materialInfoDtoList);
-        return AjaxResult.success(data);
+        orderMachineMaterialInfo.setOrderId(order.getId());
+        if(order.getOrderEndTime()!=null){
+            orderMachineMaterialInfo.setOrderEndTime(order.getOrderEndTime().getTime());
+        }
+        if(order.getOrderStartTime()!=null){
+            orderMachineMaterialInfo.setOrderStartTime(order.getOrderStartTime().getTime());
+        }
+
+
+        orderMachineMaterialInfo.setOrderSumCount(order.getOrderSumCount());
+        orderMachineMaterialInfo.setOrderTodayPlanCount(order.getOrderTodayPlanCount());
+
+        return AjaxResult.success(orderMachineMaterialInfo);
     }
 }
     

@@ -20,4 +20,9 @@ public class OrderDto {
     private Long planId;
 
     private String tips;
+
+    private Long orderStartTime;
+    private Long orderEndTime;
+    private Integer orderSumCount;
+    private Integer orderTodayPlanCount;
 }

@@ -42,7 +42,7 @@
                             and deleted= #{deleted,jdbcType=INTEGER}
                         </if>
                         <if test="productTime != null">
-                            and product_time= #{productTime,jdbcType=TIMESTAMP}
+                            and product_time= #{productTime,jdbcType=DATE}
                         </if>
                         <if test="orderData != null and orderData != ''">
                             and order_data= #{orderData,jdbcType=VARCHAR}

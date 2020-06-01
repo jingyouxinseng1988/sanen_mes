@@ -43,6 +43,11 @@ public class AddProductionPlanDto {
 
     private List<MaterialInfoDto> materialInfoList;
 
+    private Long orderStartTime;
+    private Long orderEndTime;
+    private Integer orderSumCount;
+    private Integer orderTodayPlanCount;
+
 
     public static void main(String[] args) {
 

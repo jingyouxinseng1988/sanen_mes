@@ -3,6 +3,9 @@ package com.plc.platform.entity;
 
 import lombok.Data;
 
+import java.util.Date;
+
+
 /**
 * 实体对象：
 */
@@ -27,10 +30,10 @@ public class Order {
             private Integer deleted;
 
         //  
-            private java.util.Date createTime;
+            private Date createTime;
 
         //  
-            private java.util.Date modifyTime;
+            private Date modifyTime;
 
         // 物料信息 
             private String materialInfo;
@@ -39,6 +42,13 @@ public class Order {
             private String machineInfo;
 
             private String  tips;
+
+
+
+    private Date orderStartTime;
+    private Date orderEndTime;
+    private Integer orderSumCount;
+    private Integer orderTodayPlanCount;
 
 
 }

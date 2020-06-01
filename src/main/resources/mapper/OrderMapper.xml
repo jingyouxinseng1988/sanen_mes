@@ -8,12 +8,16 @@
             product_name productName,
             customer_name customerName,
             plan_id planId,
-            tips,
             deleted deleted,
             create_time createTime,
             modify_time modifyTime,
             material_info materialInfo,
-            machine_info machineInfo
+            machine_info machineInfo,
+            tips tips,
+            order_today_plan_count orderTodayPlanCount,
+            order_sum_count orderSumCount,
+            order_start_time orderStartTime,
+            order_end_time orderEndTime
 
     </sql>
     <!-- （条件） -->
@@ -27,9 +31,6 @@
             </if>
             <if test="productName != null and productName != ''">
                 and product_name= #{productName,jdbcType=VARCHAR}
-            </if>
-            <if test="tips != null and tips != ''">
-                and tips= #{tips,jdbcType=VARCHAR}
             </if>
             <if test="customerName != null and customerName != ''">
                 and customer_name= #{customerName,jdbcType=VARCHAR}
@@ -52,6 +53,21 @@
             <if test="machineInfo != null and machineInfo != ''">
                 and machine_info= #{machineInfo,jdbcType=VARCHAR}
             </if>
+            <if test="tips != null and tips != ''">
+                and tips= #{tips,jdbcType=VARCHAR}
+            </if>
+            <if test="orderTodayPlanCount != null">
+                and order_today_plan_count= #{orderTodayPlanCount,jdbcType=INTEGER}
+            </if>
+            <if test="orderSumCount != null">
+                and order_sum_count= #{orderSumCount,jdbcType=INTEGER}
+            </if>
+            <if test="orderStartTime != null">
+                and order_start_time= #{orderStartTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="orderEndTime != null">
+                and order_end_time= #{orderEndTime,jdbcType=TIMESTAMP}
+            </if>
         </where>
     </sql>
     <!-- （插入或更新） -->
@@ -62,9 +78,6 @@
             </if>
             <if test="customerName != null and customerName != ''">
                 customer_name= #{customerName,jdbcType=VARCHAR},
-            </if>
-            <if test="tips != null and tips != ''">
-                tips= #{tips,jdbcType=VARCHAR},
             </if>
             <if test="planId != null">
                 plan_id= #{planId,jdbcType=BIGINT},
@@ -84,6 +97,21 @@
             <if test="machineInfo != null and machineInfo != ''">
                 machine_info= #{machineInfo,jdbcType=VARCHAR},
             </if>
+            <if test="tips != null and tips != ''">
+                tips= #{tips,jdbcType=VARCHAR},
+            </if>
+            <if test="orderTodayPlanCount != null">
+                order_today_plan_count= #{orderTodayPlanCount,jdbcType=INTEGER},
+            </if>
+            <if test="orderSumCount != null">
+                order_sum_count= #{orderSumCount,jdbcType=INTEGER},
+            </if>
+            <if test="orderStartTime != null">
+                order_start_time= #{orderStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderEndTime != null">
+                order_end_time= #{orderEndTime,jdbcType=TIMESTAMP},
+            </if>
         </trim>
     </sql>
 
@@ -98,7 +126,7 @@
             keyProperty="id">
         insert into `order`
         (
-        tips,
+
         product_name,
         customer_name,
         plan_id,
@@ -106,13 +134,18 @@
         create_time,
         modify_time,
         material_info,
-        machine_info
+        machine_info,
+        tips,
+        order_today_plan_count,
+        order_sum_count,
+        order_start_time,
+        order_end_time
         )
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
             (
             <trim prefix="" suffixOverrides=",">
-                #{item.tips,jdbcType=VARCHAR},
+
                 #{item.productName,jdbcType=VARCHAR},
                 #{item.customerName,jdbcType=VARCHAR},
                 #{item.planId,jdbcType=BIGINT},
@@ -121,6 +154,11 @@
                 #{item.modifyTime,jdbcType=TIMESTAMP},
                 #{item.materialInfo,jdbcType=VARCHAR},
                 #{item.machineInfo,jdbcType=VARCHAR},
+                #{item.tips,jdbcType=VARCHAR},
+                #{item.orderTodayPlanCount,jdbcType=INTEGER},
+                #{item.orderSumCount,jdbcType=INTEGER},
+                #{item.orderStartTime,jdbcType=TIMESTAMP},
+                #{item.orderEndTime,jdbcType=TIMESTAMP},
             </trim>
             )
         </foreach>
@@ -153,7 +191,7 @@
         from `order`
         <include refid="where"/>
         <if test="column != null">
-            order by ${column} ${sort}
+            order by ${column}  ${sort}
         </if>
         <if test="offset != null">
             limit #{offset} , ${limit}
