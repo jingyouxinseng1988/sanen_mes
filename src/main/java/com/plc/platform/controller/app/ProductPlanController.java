@@ -6,9 +6,12 @@ import com.plc.platform.controller.BaseController;
 import com.plc.platform.domain.AjaxResult;
 import com.plc.platform.dto.request.*;
 import com.plc.platform.entity.Order;
+import com.plc.platform.entity.OrderProgress;
 import com.plc.platform.entity.ProductionPlan;
+import com.plc.platform.queryBo.OrderProgressQueryBo;
 import com.plc.platform.queryBo.OrderQueryBo;
 import com.plc.platform.queryBo.ProductionPlanQueryBo;
+import com.plc.platform.service.OrderProgressService;
 import com.plc.platform.service.OrderService;
 import com.plc.platform.service.ProductionPlanService;
 import com.plc.platform.util.SpringUtil;
@@ -20,9 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/production_plan")
@@ -59,16 +61,17 @@ public class ProductPlanController extends BaseController {
             productionPlanService.update(productionPlan);
         }
         Order order = new Order();
+        order.setOrderCode(planDto.getOrderCode());
         order.setPlanId(productionPlan.getId());
         order.setProductName(planDto.getProductName());
         order.setCustomerName(planDto.getCustomerName());
         order.setMachineInfo(JSON.toJSONString(planDto.getMachineInfoList()));
         order.setMaterialInfo(JSON.toJSONString(planDto.getMaterialInfoList()));
         order.setTips(planDto.getTips());
-        if(planDto.getOrderEndTime()!=null){
+        if (planDto.getOrderEndTime() != null) {
             order.setOrderStartTime(new Date(planDto.getOrderStartTime()));
         }
-        if(planDto.getOrderStartTime()!=null){
+        if (planDto.getOrderStartTime() != null) {
             order.setOrderEndTime(new Date(planDto.getOrderEndTime()));
         }
         order.setOrderTodayPlanCount(planDto.getOrderTodayPlanCount());
@@ -127,8 +130,13 @@ public class ProductPlanController extends BaseController {
         for (Order order : list) {
             OrderDto orderDto = new OrderDto();
             SpringUtil.copyNotNullProperties(order, orderDto);
-            orderDto.setOrderEndTime(order.getOrderStartTime().getTime());
-            orderDto.setOrderStartTime(order.getOrderEndTime().getTime());
+            if (order.getOrderStartTime() != null) {
+                orderDto.setOrderEndTime(order.getOrderStartTime().getTime());
+            }
+            if (order.getOrderEndTime() != null) {
+                orderDto.setOrderStartTime(order.getOrderEndTime().getTime());
+            }
+            orderDto.setOrderCode(order.getOrderCode());
             data.add(orderDto);
         }
         return AjaxResult.success(data);
@@ -161,6 +169,75 @@ public class ProductPlanController extends BaseController {
         orderMachineMaterialInfo.setOrderTodayPlanCount(order.getOrderTodayPlanCount());
 
         return AjaxResult.success(orderMachineMaterialInfo);
+    }
+
+    @Resource
+    private OrderProgressService orderProgressService;
+
+
+    @RequestMapping(value = "/orderProgress/update")
+    public AjaxResult orderProgressUpdate(@RequestBody @Valid OrderProgressUpdate orderProgressUpdate) {
+        Date producTime = new Date(orderProgressUpdate.getProductTime());
+        OrderProgressQueryBo orderProgressQueryBo = new OrderProgressQueryBo();
+        orderProgressQueryBo.setDeleted(Constants.DELETED_NO);
+        orderProgressQueryBo.setProductTime(producTime);
+        orderProgressQueryBo.setOrderCode(orderProgressUpdate.getOrderCode());
+
+        List<OrderProgress> list = orderProgressService.getList(orderProgressQueryBo);
+        if (list.isEmpty()) {
+            OrderProgress orderProgress = new OrderProgress();
+            orderProgress.setBadProductCount(orderProgressUpdate.getBadProductCount());
+            orderProgress.setFinishedProductCount(orderProgressUpdate.getFinishedProductCount());
+            orderProgress.setProductTime(producTime);
+            orderProgress.setOrderCode(orderProgressUpdate.getOrderCode());
+            orderProgress.setSumCount(orderProgress.getSumCount());
+            orderProgress.setMaterialCode(orderProgress.getMaterialCode());
+            orderProgress.setMaterialName(orderProgress.getMaterialName());
+            orderProgressService.add(orderProgress);
+        } else {
+            OrderProgress orderProgress = list.get(0);
+            orderProgress.setBadProductCount(orderProgress.getBadProductCount() + orderProgressUpdate.getBadProductCount());
+            orderProgress.setFinishedProductCount(orderProgress.getFinishedProductCount() + orderProgressUpdate.getFinishedProductCount());
+            orderProgress.setProductTime(producTime);
+            orderProgress.setSumCount(orderProgress.getSumCount());
+            orderProgress.setMaterialCode(orderProgress.getMaterialCode());
+            orderProgress.setMaterialName(orderProgress.getMaterialName());
+            orderProgressService.update(orderProgress);
+        }
+        return AjaxResult.success("");
+
+    }
+
+    @RequestMapping(value = "/orderProgress/list")
+    public AjaxResult getProgressList(@RequestBody @Valid OrderCode orderCode) {
+        OrderProgressQueryBo orderProgressQueryBo = new OrderProgressQueryBo();
+        orderProgressQueryBo.setDeleted(Constants.DELETED_NO);
+        orderProgressQueryBo.setOrderCode(orderCode.getOrderCode());
+        List<OrderProgress> list = orderProgressService.getList(orderProgressQueryBo);
+        Map<String, List<OrderProgress>> collect = list.stream().collect(Collectors.groupingBy(OrderProgress::getMaterialCode));
+
+        Map<String, Object> result = new HashMap<>();
+        Iterator<Map.Entry<String, List<OrderProgress>>> iterator = collect.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, List<OrderProgress>> next = iterator.next();
+            String key = next.getKey();
+            List<OrderProgress> value = next.getValue();
+            List<Object> data = new ArrayList<>();
+            for (OrderProgress orderProgress : value) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("productTime", orderProgress.getProductTime().getTime());
+                map.put("orderCode", orderProgress.getOrderCode());
+                map.put("badProductCount", orderProgress.getBadProductCount());
+                map.put("finishedProductCount", orderProgress.getFinishedProductCount());
+                map.put("sumCount", orderProgress.getSumCount());
+                map.put("materialCode", orderProgress.getMaterialCode());
+                map.put("materialName", orderProgress.getMaterialName());
+                data.add(map);
+            }
+            result.put(key, data);
+        }
+
+        return AjaxResult.success(result);
     }
 }
     

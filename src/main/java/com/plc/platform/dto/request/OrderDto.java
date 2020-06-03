@@ -21,6 +21,8 @@ public class OrderDto {
 
     private String tips;
 
+    private String orderCode;
+
     private Long orderStartTime;
     private Long orderEndTime;
     private Integer orderSumCount;

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.plc.platform.dao.OrderProgressDao">
+    <!-- 查询字段 -->
+    <sql id="fields">
+        select
+            id id,
+            order_code orderCode,
+            product_time productTime,
+            create_time createTime,
+            modify_time modifyTime,
+            deleted deleted,
+            finished_product_count finishedProductCount,
+            bad_product_count badProductCount,
+            material_name materialName,
+            material_code materialCode,
+            sum_count sumCount
+
+    </sql>
+    <!-- （条件） -->
+    <sql id="where">
+        <where>
+                        <if test="ids != null and  ids.size > 0">
+                            and id in
+                            <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                            </foreach>
+                        </if>
+                        <if test="orderCode != null and orderCode != ''">
+                            and order_code= #{orderCode,jdbcType=VARCHAR}
+                        </if>
+                        <if test="productTime != null">
+                            and product_time= #{productTime,jdbcType=DATE}
+                        </if>
+                        <if test="createTime != null">
+                            and create_time= #{createTime,jdbcType=TIMESTAMP}
+                        </if>
+                        <if test="modifyTime != null">
+                            and modify_time= #{modifyTime,jdbcType=TIMESTAMP}
+                        </if>
+                        <if test="deleted != null">
+                            and deleted= #{deleted,jdbcType=INTEGER}
+                        </if>
+                        <if test="finishedProductCount != null">
+                            and finished_product_count= #{finishedProductCount,jdbcType=INTEGER}
+                        </if>
+                        <if test="badProductCount != null">
+                            and bad_product_count= #{badProductCount,jdbcType=INTEGER}
+                        </if>
+                        <if test="materialName != null and materialName != ''">
+                            and material_name= #{materialName,jdbcType=VARCHAR}
+                        </if>
+                        <if test="materialCode != null and materialCode != ''">
+                            and material_code= #{materialCode,jdbcType=VARCHAR}
+                        </if>
+                        <if test="sumCount != null">
+                            and sum_count= #{sumCount,jdbcType=INTEGER}
+                        </if>
+        </where>
+    </sql>
+    <!-- （插入或更新） -->
+    <sql id="saveSet">
+        <trim prefix="" suffixOverrides=",">
+                        <if test="orderCode != null and orderCode != ''">
+                            order_code= #{orderCode,jdbcType=VARCHAR},
+                        </if>
+                        <if test="productTime != null">
+                            product_time= #{productTime,jdbcType=DATE},
+                        </if>
+                        <if test="createTime != null">
+                            create_time= #{createTime,jdbcType=TIMESTAMP},
+                        </if>
+                        <if test="modifyTime != null">
+                            modify_time= #{modifyTime,jdbcType=TIMESTAMP},
+                        </if>
+                        <if test="deleted != null">
+                            deleted= #{deleted,jdbcType=INTEGER},
+                        </if>
+                        <if test="finishedProductCount != null">
+                            finished_product_count= #{finishedProductCount,jdbcType=INTEGER},
+                        </if>
+                        <if test="badProductCount != null">
+                            bad_product_count= #{badProductCount,jdbcType=INTEGER},
+                        </if>
+                        <if test="materialName != null and materialName != ''">
+                            material_name= #{materialName,jdbcType=VARCHAR},
+                        </if>
+                        <if test="materialCode != null and materialCode != ''">
+                            material_code= #{materialCode,jdbcType=VARCHAR},
+                        </if>
+                        <if test="sumCount != null">
+                            sum_count= #{sumCount,jdbcType=INTEGER},
+                        </if>
+        </trim>
+    </sql>
+
+    <!-- 插入实体 -->
+    <insert id="insert" parameterType="com.plc.platform.entity.OrderProgress" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into order_progress set
+        <include refid="saveSet"/>
+    </insert>
+    <!-- 批量插入实体 -->
+    <insert id="insertList" parameterType="java.util.List" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into order_progress
+        (
+                     order_code,
+                     product_time,
+                     create_time,
+                     modify_time,
+                     deleted,
+                     finished_product_count,
+                     bad_product_count,
+                     material_name,
+                     material_code,
+                     sum_count
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            <trim prefix="" suffixOverrides=",">
+                    #{item.orderCode,jdbcType=VARCHAR},
+                    #{item.productTime,jdbcType=TIMESTAMP},
+                    #{item.createTime,jdbcType=TIMESTAMP},
+                    #{item.modifyTime,jdbcType=TIMESTAMP},
+                    #{item.deleted,jdbcType=INTEGER},
+                    #{item.finishedProductCount,jdbcType=INTEGER},
+                    #{item.badProductCount,jdbcType=INTEGER},
+                    #{item.materialName,jdbcType=VARCHAR},
+                    #{item.materialCode,jdbcType=VARCHAR},
+                    #{item.sumCount,jdbcType=INTEGER},
+            </trim>
+            )
+        </foreach>
+    </insert>
+
+    <!-- 更新实体 -->
+    <update id="update" parameterType="com.plc.platform.entity.OrderProgress">
+        update order_progress set
+        <include refid="saveSet"/>
+        where id = #{id}
+    </update>
+    <update id="deleteById">
+        update order_progress
+        <set>
+            deleted=1
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 查询单个 -->
+    <select id="getById" resultType="com.plc.platform.entity.OrderProgress">
+        <include refid="fields"/>
+        from order_progress
+        where id = #{id}
+    </select>
+    <!-- 查询 -->
+    <select id="getList"
+            resultType="com.plc.platform.entity.OrderProgress">
+        <include refid="fields"/>
+        from order_progress
+        <include refid="where"/>
+        <if test="column != null">
+            order by ${column}  ${sort}
+        </if>
+        <if test="offset != null">
+            limit #{offset} , ${limit}
+        </if>
+    </select>
+
+
+    <!-- 查询（计数） -->
+    <select id="getCount" resultType="java.lang.Long">
+        select count(*)
+        from order_progress
+        <include refid="where"/>
+    </select>
+</mapper>
