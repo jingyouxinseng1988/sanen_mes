@@ -42,4 +42,16 @@ public class OrderProgressQueryBo extends BaseQueryBo {
         public void setBadProductCount(Integer badProductCount) {
            put("badProductCount", badProductCount);
         }
+
+        public void setMaterialName(String materialName) {
+           put("materialName", materialName);
+        }
+
+        public void setMaterialCode(String materialCode) {
+           put("materialCode", materialCode);
+        }
+
+        public void setSumCount(Integer sumCount) {
+           put("sumCount", sumCount);
+        }
 }

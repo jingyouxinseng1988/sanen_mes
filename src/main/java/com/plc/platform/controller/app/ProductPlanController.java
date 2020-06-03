@@ -176,34 +176,39 @@ public class ProductPlanController extends BaseController {
 
 
     @RequestMapping(value = "/orderProgress/update")
-    public AjaxResult orderProgressUpdate(@RequestBody @Valid OrderProgressUpdate orderProgressUpdate) {
-        Date producTime = new Date(orderProgressUpdate.getProductTime());
-        OrderProgressQueryBo orderProgressQueryBo = new OrderProgressQueryBo();
-        orderProgressQueryBo.setDeleted(Constants.DELETED_NO);
-        orderProgressQueryBo.setProductTime(producTime);
-        orderProgressQueryBo.setOrderCode(orderProgressUpdate.getOrderCode());
+    public AjaxResult orderProgressUpdate(@RequestBody @Valid List<OrderProgressUpdate> orderProgressUpdateList) {
 
-        List<OrderProgress> list = orderProgressService.getList(orderProgressQueryBo);
-        if (list.isEmpty()) {
-            OrderProgress orderProgress = new OrderProgress();
-            orderProgress.setBadProductCount(orderProgressUpdate.getBadProductCount());
-            orderProgress.setFinishedProductCount(orderProgressUpdate.getFinishedProductCount());
-            orderProgress.setProductTime(producTime);
-            orderProgress.setOrderCode(orderProgressUpdate.getOrderCode());
-            orderProgress.setSumCount(orderProgress.getSumCount());
-            orderProgress.setMaterialCode(orderProgress.getMaterialCode());
-            orderProgress.setMaterialName(orderProgress.getMaterialName());
-            orderProgressService.add(orderProgress);
-        } else {
-            OrderProgress orderProgress = list.get(0);
-            orderProgress.setBadProductCount(orderProgress.getBadProductCount() + orderProgressUpdate.getBadProductCount());
-            orderProgress.setFinishedProductCount(orderProgress.getFinishedProductCount() + orderProgressUpdate.getFinishedProductCount());
-            orderProgress.setProductTime(producTime);
-            orderProgress.setSumCount(orderProgress.getSumCount());
-            orderProgress.setMaterialCode(orderProgress.getMaterialCode());
-            orderProgress.setMaterialName(orderProgress.getMaterialName());
-            orderProgressService.update(orderProgress);
+        for (OrderProgressUpdate orderProgressUpdate : orderProgressUpdateList) {
+            Date producTime = new Date(orderProgressUpdate.getProductTime());
+            OrderProgressQueryBo orderProgressQueryBo = new OrderProgressQueryBo();
+            orderProgressQueryBo.setDeleted(Constants.DELETED_NO);
+            orderProgressQueryBo.setProductTime(producTime);
+            orderProgressQueryBo.setMaterialCode(orderProgressUpdate.getMaterialCode());
+            orderProgressQueryBo.setOrderCode(orderProgressUpdate.getOrderCode());
+
+            List<OrderProgress> list = orderProgressService.getList(orderProgressQueryBo);
+            if (list.isEmpty()) {
+                OrderProgress orderProgress = new OrderProgress();
+                orderProgress.setBadProductCount(orderProgressUpdate.getBadProductCount());
+                orderProgress.setFinishedProductCount(orderProgressUpdate.getFinishedProductCount());
+                orderProgress.setProductTime(producTime);
+                orderProgress.setOrderCode(orderProgressUpdate.getOrderCode());
+                orderProgress.setSumCount(orderProgressUpdate.getSumCount());
+                orderProgress.setMaterialCode(orderProgressUpdate.getMaterialCode());
+                orderProgress.setMaterialName(orderProgressUpdate.getMaterialName());
+                orderProgressService.add(orderProgress);
+            } else {
+                OrderProgress orderProgress = list.get(0);
+                orderProgress.setBadProductCount(orderProgress.getBadProductCount() + orderProgressUpdate.getBadProductCount());
+                orderProgress.setFinishedProductCount(orderProgress.getFinishedProductCount() + orderProgressUpdate.getFinishedProductCount());
+                orderProgress.setProductTime(producTime);
+                orderProgress.setSumCount(orderProgressUpdate.getSumCount());
+                orderProgress.setMaterialCode(orderProgressUpdate.getMaterialCode());
+                orderProgress.setMaterialName(orderProgressUpdate.getMaterialName());
+                orderProgressService.update(orderProgress);
+            }
         }
+
         return AjaxResult.success("");
 
     }
