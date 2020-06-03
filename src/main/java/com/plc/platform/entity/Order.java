@@ -7,42 +7,43 @@ import java.util.Date;
 
 
 /**
-* 实体对象：
-*/
+ * 实体对象：
+ */
 @Data
 public class Order {
 
 
-// ~~~~实体属性
-        //  [主键]
-            private Long id;
+    // ~~~~实体属性
+    //  [主键]
+    private Long id;
 
-        //  
-            private String productName;
+    //
+    private String productName;
 
-        //  
-            private String customerName;
+    //
+    private String customerName;
 
-        //  
-            private Long planId;
+    //
+    private Long planId;
 
-        //  
-            private Integer deleted;
+    //
+    private Integer deleted;
 
-        //  
-            private Date createTime;
+    //
+    private Date createTime;
 
-        //  
-            private Date modifyTime;
+    //
+    private Date modifyTime;
 
-        // 物料信息 
-            private String materialInfo;
+    // 物料信息
+    private String materialInfo;
 
-        // 机器信息 
-            private String machineInfo;
+    // 机器信息
+    private String machineInfo;
 
-            private String  tips;
+    private String tips;
 
+    private String orderCode;
 
 
     private Date orderStartTime;

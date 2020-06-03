@@ -10,7 +10,8 @@ import java.util.List;
 
 @Data
 public class AddProductionPlanDto {
-
+    @NotNull(message = "订单Code不能为空")
+    private String orderCode;
 
     private Long id;
     // 负责人

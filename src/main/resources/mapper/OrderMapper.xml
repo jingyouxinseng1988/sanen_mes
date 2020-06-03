@@ -6,6 +6,7 @@
         select
             id id,
             product_name productName,
+            order_code orderCode,
             customer_name customerName,
             plan_id planId,
             deleted deleted,
@@ -111,6 +112,9 @@
             </if>
             <if test="orderEndTime != null">
                 order_end_time= #{orderEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderCode != null">
+                order_code= #{orderCode,jdbcType=VARCHAR},
             </if>
         </trim>
     </sql>

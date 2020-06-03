@@ -136,7 +136,7 @@ public class ProductPlanController extends BaseController {
 
     @RequestMapping(value = "/material_machine/list")
     public AjaxResult getMaterialInfo(@RequestBody @Valid OrderId orderId) {
-        OrderMachineMaterialInfo orderMachineMaterialInfo=new OrderMachineMaterialInfo();
+        OrderMachineMaterialInfo orderMachineMaterialInfo = new OrderMachineMaterialInfo();
         Order order = orderService.getById(orderId.getOrderId());
         if (order == null) {
             return AjaxResult.success(orderMachineMaterialInfo);
@@ -149,10 +149,10 @@ public class ProductPlanController extends BaseController {
         orderMachineMaterialInfo.setMaterialInfoList(materialInfoDtoList);
 
         orderMachineMaterialInfo.setOrderId(order.getId());
-        if(order.getOrderEndTime()!=null){
+        if (order.getOrderEndTime() != null) {
             orderMachineMaterialInfo.setOrderEndTime(order.getOrderEndTime().getTime());
         }
-        if(order.getOrderStartTime()!=null){
+        if (order.getOrderStartTime() != null) {
             orderMachineMaterialInfo.setOrderStartTime(order.getOrderStartTime().getTime());
         }
 
