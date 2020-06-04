@@ -15,6 +15,7 @@ public class OrderMachineMaterialInfo {
     private Long orderEndTime;
     private Integer orderSumCount;
     private Integer orderTodayPlanCount;
+    private String orderCode;
 
 
 }

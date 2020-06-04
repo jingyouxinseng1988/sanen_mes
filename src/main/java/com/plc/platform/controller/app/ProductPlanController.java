@@ -167,7 +167,7 @@ public class ProductPlanController extends BaseController {
 
         orderMachineMaterialInfo.setOrderSumCount(order.getOrderSumCount());
         orderMachineMaterialInfo.setOrderTodayPlanCount(order.getOrderTodayPlanCount());
-
+        orderMachineMaterialInfo.setOrderCode(order.getOrderCode());
         return AjaxResult.success(orderMachineMaterialInfo);
     }
 
