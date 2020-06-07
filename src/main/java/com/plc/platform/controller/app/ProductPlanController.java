@@ -244,5 +244,38 @@ public class ProductPlanController extends BaseController {
 
         return AjaxResult.success(result);
     }
+
+
+    @RequestMapping(value = "/distinctOrder/list")
+    public AjaxResult getOrderList(@RequestBody OrderCode orderCode) {
+        OrderQueryBo orderQueryBo = new OrderQueryBo();
+        orderQueryBo.setDeleted(Constants.DELETED_NO);
+        orderQueryBo.setSort("id", "desc");
+        List<Order> list = orderService.getList(orderQueryBo);
+        Map<String, Order> collect = new HashMap<>();
+        for (Order order : list) {
+            if (collect.containsKey(order.getOrderCode())) {
+                continue;
+            }
+            collect.put(order.getOrderCode(), order);
+        }
+        List<Object> data = new ArrayList<>();
+        Iterator<Map.Entry<String, Order>> iterator = collect.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Order> next = iterator.next();
+            Order value = next.getValue();
+            Map<String, Object> map = new HashMap<>();
+            map.put("productName", value.getProductName());
+            map.put("sumCount", value.getOrderSumCount());
+            map.put("orderEndTime", value.getOrderEndTime() == null ? 0 : value.getOrderEndTime().getTime());
+            map.put("orderStartTime", value.getOrderEndTime() == null ? 0 : value.getOrderStartTime().getTime());
+            map.put("id", value.getId());
+            map.put("customerName", value.getCustomerName());
+            map.put("orderCode", value.getOrderCode());
+            data.add(map);
+
+        }
+        return AjaxResult.success(data);
+    }
 }
     
